@@ -1,0 +1,31 @@
+.busy {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+    display: flex;
+    z-index: 1050;
+	position: fixed;
+	background: rgba(0, 0, 0, 0.45);
+    align-items: center;
+    justify-content: center;
+}
+
+.busy .l-card {
+    color: black;
+	padding: 15px 10px;
+    display: flex;
+    font-size: 12px;
+    max-width: 120px;
+	background: white;
+    align-items: center;
+	border-radius: 4px;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.busy .l-card > svg {
+    width: 32px;
+    height: auto;
+    margin: 0 0 5px 0;
+}
