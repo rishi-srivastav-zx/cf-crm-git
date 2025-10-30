@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
@@ -18,7 +18,6 @@ import {
 export default function Dashboard() {
     const [mounted, setMounted] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
-
 
     useEffect(() => {
         setMounted(true);

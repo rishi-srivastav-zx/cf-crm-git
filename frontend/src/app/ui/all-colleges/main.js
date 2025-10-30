@@ -5,7 +5,7 @@ export default function() {
         <>
             <div className="bg-gray-50 min-h-screen">
                 {/* <!-- Main Content --> */}
-                <main className="max-w-7xl mx-auto px-4 py-8">
+                <main className="w-full mx-auto px-4 py-8">
                     {/* <!-- Page Title --> */}
                     <div className="text-center mb-8">
                         <h1 className="text-4xl font-bold text-gray-800 mb-4">
@@ -556,7 +556,7 @@ export default function() {
                         </div>
                     </div>
 
-                    <div className="container">
+                    <div className="container-fulid">
                         <div className="hero">
                             <h1>🏨 Hotel Management Course</h1>
                             <p>

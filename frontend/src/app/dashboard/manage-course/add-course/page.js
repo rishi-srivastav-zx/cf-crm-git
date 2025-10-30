@@ -113,7 +113,7 @@ export default function CourseManagement() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 ml-64">
             {/* Header */}
             <div className="bg-white shadow-md border-b border-slate-200">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                <div className="w-full mx-auto px-6 py-4 flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-slate-800">
                         Department of Agriculture and Allied Science
                     </h1>
@@ -126,7 +126,7 @@ export default function CourseManagement() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 py-8">
+            <div className="w-full mx-auto px-6 py-8">
                 {/* Add Course Form */}
                 <div className="bg-white rounded-xl shadow-lg p-6 mb-8 border border-slate-200">
                     <h2 className="text-xl font-semibold text-slate-800 mb-6">

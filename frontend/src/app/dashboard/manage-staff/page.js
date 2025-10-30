@@ -163,7 +163,7 @@ export default function StaffListingManager() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4  ml-64">
-            <div className="max-w-7xl mx-auto">
+            <div className="w-full mx-auto">
                 {/* Header */}
                 <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 border border-slate-200">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

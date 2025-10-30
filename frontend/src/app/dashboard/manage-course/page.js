@@ -97,7 +97,7 @@ export default function DepartmentCourseManager() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 ml-64">
-            <div className="max-w-7xl mx-auto">
+            <div className="w-full mx-auto">
                 {/* Page Header */}
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-lg p-6 mb-6 text-white">
                     <div className="flex items-center gap-3">

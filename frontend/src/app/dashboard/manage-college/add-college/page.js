@@ -190,6 +190,9 @@ export default function AddCollegeForm() {
     const showError = (field) => {
         return touched[field] && errors[field];
     };
+     const handleBack = () => {
+         window.history.back();
+     };
 
 
     return (
@@ -222,7 +225,7 @@ export default function AddCollegeForm() {
                     </div>
                 </div>
             )}
-            <div className="max-w-6xl mx-auto">
+            <div className="w-full mx-auto">
                 {/* Header */}
                 <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 border border-slate-200">
                     <div className="flex items-center gap-3 mb-2">
@@ -238,6 +241,13 @@ export default function AddCollegeForm() {
                                 the system
                             </p>
                         </div>
+            
+                        <button
+                            onClick={handleBack}
+                            className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-colors ml-auto"
+                        >
+                            Back
+                        </button>
                     </div>
                 </div>
 

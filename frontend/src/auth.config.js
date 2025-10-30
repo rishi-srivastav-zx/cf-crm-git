@@ -1,36 +1,37 @@
-import { redirect } from "next/dist/server/api-utils";
 import { NextResponse } from "next/server";
 
 export const authConfig = {
     pages: {
         signIn: "/signin",
-        dashboard: "/dashboard",
     },
     callbacks: {
         authorized({ auth, request: { nextUrl } }) {
-            console.log("Called authorized method of auth config");
-            console.log("Logging auth data: ", auth);
-            const isLoggedIn = !!auth?.user;
+            console.log("Authorized callback triggered");
+
+            // If not logged in
+            if (!auth || !auth.user) {
+                console.log("No auth session found — allowing public routes");
+                return true;
+            }
+
+            const email = auth.user.email;
             const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
-            console.log('Dashboard Page',isOnDashboard)
-            // If user is trying to access dashboard
-            if (isOnDashboard) {
-                return isLoggedIn; // Allow if logged in, redirect to signin if not
-            } else if(isLoggedIn) {
-                console.log('Redirecting to Dashboard')
-                return Response.redirect('http://localhost:3000/dashboard')
+            const isOnGrdDashboard =
+                nextUrl.pathname.startsWith("/grd-dashboard");
+
+            // Redirect based on user
+            if (email === "exe@example.com" && !isOnDashboard) {
+                return NextResponse.redirect(new URL("/dashboard", nextUrl));
             }
 
-            // If user is logged in and trying to access other pages (like signin)
-            if (
-                isLoggedIn &&
-                (nextUrl.pathname === "/" || nextUrl.pathname === "/signin")
-            ) {
-                return NextResponse.rewrite(new URL("/dashboard", nextUrl));
+            if (email === "exe@example2.com" && !isOnGrdDashboard) {
+                return NextResponse.redirect(
+                    new URL("/grd-dashboard", nextUrl)
+                );
             }
 
-            return true; // Allow access to other pages
+            return true;
         },
     },
-    providers: [], // Add providers with an empty array for now
+    providers: [],
 };

@@ -1,5 +1,5 @@
 "use client";
-import  { useState } from "react";
+import { useState } from "react";
 import {
     Search,
     Phone,
@@ -12,14 +12,117 @@ import {
     XCircle,
     ChevronLeft,
     ChevronRight,
-    Link,
+    X,
 } from "lucide-react";
 
 export default function CollegeListingManager() {
     const [searchTerm, setSearchTerm] = useState("");
     const [entriesPerPage, setEntriesPerPage] = useState(10);
     const [currentPage, setCurrentPage] = useState(1);
+    const [showStaffPopup, setShowStaffPopup] = useState("");
+    const [selectedCollege, setSelectedCollege] = useState(null);
+    const getStaffByCollege = (collegeId) => {
+        return allStaff.filter((staff) => staff.collegeId === collegeId);
+    };
 
+    const [showFollowUpPopup, setShowFollowUpPopup] = useState(false);
+    const [selectedCollegeForFollowUp, setSelectedCollegeForFollowUp] =
+        useState(null);
+    const [followUpData, setFollowUpData] = useState({
+        status: "",
+        remarks: "",
+        nextDate: "",
+        nextTime: "",
+    });
+    const [remarksCount, setRemarksCount] = useState(0);
+
+    // Add the click handler
+    const handleFollowUpClick = (college) => {
+        setSelectedCollegeForFollowUp(college);
+        setShowFollowUpPopup(true);
+        // Reset form
+        setFollowUpData({
+            status: "",
+            remarks: "",
+            nextDate: "",
+            nextTime: "",
+        });
+        setRemarksCount(0);
+    };
+
+    // Handle form input changes
+    const handleFollowUpChange = (field, value) => {
+        if (field === "remarks") {
+            if (value.length <= 50) {
+                setFollowUpData((prev) => ({ ...prev, [field]: value }));
+                setRemarksCount(value.length);
+            }
+        } else {
+            setFollowUpData((prev) => ({ ...prev, [field]: value }));
+        }
+    };
+
+    // Handle form submission
+    const handleFollowUpSubmit = () => {
+        // Validate required fields
+        if (!followUpData.status) {
+            alert("Please select a follow-up status");
+            return;
+        }
+        if (!followUpData.nextDate) {
+            alert("Please select next follow-up date");
+            return;
+        }
+        if (!followUpData.nextTime) {
+            alert("Please select next follow-up time");
+            return;
+        }
+
+        // Submit the data
+        console.log("Follow-up data:", {
+            collegeId: selectedCollegeForFollowUp.id,
+            collegeName: selectedCollegeForFollowUp.name,
+            ...followUpData,
+        });
+
+        // Close popup
+        setShowFollowUpPopup(false);
+
+        // You can add API call here
+        // await fetch('/api/follow-ups', { method: 'POST', body: JSON.stringify(data) });
+    };
+
+   const handleViewStaff = (college) => {
+       const collegeStaff = getStaffByCollege(college.id);
+       setSelectedCollege({
+           ...college,
+           staff: collegeStaff,
+           staffMembers: collegeStaff.length,
+       });
+       setShowStaffPopup(true);
+   };
+   const allStaff = [
+       {
+           name: "SANJANA SHARMA",
+           email: "grdcounsellor@gmail.com",
+           mobile: "9863201456",
+       },
+       {
+           name: "GRD COLLEGE ADMIN",
+           email: "grdadmin@gmail.com",
+           mobile: "8520146320",
+       },
+       {
+           name: "SUNIDHI CHAUHAN",
+           email: "sunidhichauhanccounsellor@gmail.com",
+           mobile: "7418523741",
+       },
+       {
+           name: "ARCHNA GAUTAM",
+           email: "archnagautam@gmail.com",
+           mobile: "8526321056",
+       },
+   ];
     const colleges = [
         {
             id: 1,
@@ -102,7 +205,7 @@ export default function CollegeListingManager() {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-2 ml-64">
-            <div className="max-w-7xl mx-auto">
+            <div className="w-full mx-auto">
                 {/* Header */}
                 <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 border border-slate-200">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -118,7 +221,10 @@ export default function CollegeListingManager() {
                                 View and manage your college database
                             </p>
                         </div>
-                        <a href="/dashboard/manage-college/add-college" className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-indigo-200 transition-all duration-200 hover:scale-105">
+                        <a
+                            href="/dashboard/manage-college/add-college"
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 shadow-lg shadow-indigo-200 transition-all duration-200 hover:scale-105"
+                        >
                             <Plus size={20} />
                             Add College
                         </a>
@@ -229,7 +335,14 @@ export default function CollegeListingManager() {
                                         </td>
                                         <td className="px-4 py-2">
                                             {college.staffMembers ? (
-                                                <div className="flex items-center gap-2 text-slate-700">
+                                                <div
+                                                    className="flex items-center gap-2 text-slate-700 cursor-pointer hover:bg-slate-50 rounded px-2 py-1 transition-colors"
+                                                    onClick={() =>
+                                                        handleViewStaff(
+                                                            allStaff
+                                                        )
+                                                    }
+                                                >
                                                     <Users
                                                         size={18}
                                                         className="text-indigo-600"
@@ -244,9 +357,17 @@ export default function CollegeListingManager() {
                                                 </span>
                                             )}
                                         </td>
+
                                         <td className="px-4 py-2">
                                             {college.hasFollowUp && (
-                                                <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded-lg font-medium text-sm">
+                                                <span
+                                                    className="inline-flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded-lg font-medium text-sm cursor-pointer hover:bg-amber-200 transition-colors"
+                                                    onClick={() =>
+                                                        handleFollowUpClick(
+                                                            college
+                                                        )
+                                                    }
+                                                >
                                                     Follow Up
                                                 </span>
                                             )}
@@ -271,6 +392,314 @@ export default function CollegeListingManager() {
                                 ))}
                             </tbody>
                         </table>
+
+                        {/* Follow-Up Popup */}
+                        {showFollowUpPopup && selectedCollegeForFollowUp && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between px-6 py-4 border-b">
+                                        <h2 className="text-lg font-semibold text-slate-800">
+                                            Follow Up for{" "}
+                                            {selectedCollegeForFollowUp.name}
+                                        </h2>
+                                        <button
+                                            onClick={() =>
+                                                setShowFollowUpPopup(false)
+                                            }
+                                            className="text-slate-400 hover:text-slate-600 transition-colors"
+                                        >
+                                            <X size={20} />
+                                        </button>
+                                    </div>
+
+                                    {/* Body */}
+                                    <div className="px-6 py-4 space-y-4">
+                                        {/* No entry message */}
+                                        <div className="text-center py-2">
+                                            <p className="text-slate-500 text-sm">
+                                                No entry in the database.
+                                            </p>
+                                        </div>
+
+                                        {/* Follow-Up Status */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Follow-Up Status{" "}
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
+                                            </label>
+                                            <div className="space-y-2">
+                                                <label className="flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="followUpStatus"
+                                                        value="Call Back Later"
+                                                        checked={
+                                                            followUpData.status ===
+                                                            "Call Back Later"
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleFollowUpChange(
+                                                                "status",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="mr-2"
+                                                    />
+                                                    <span className="text-sm text-slate-700">
+                                                        Call Back Later
+                                                    </span>
+                                                </label>
+                                                <label className="flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="followUpStatus"
+                                                        value="Not Interested"
+                                                        checked={
+                                                            followUpData.status ===
+                                                            "Not Interested"
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleFollowUpChange(
+                                                                "status",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="mr-2"
+                                                    />
+                                                    <span className="text-sm text-slate-700">
+                                                        Not Interested
+                                                    </span>
+                                                </label>
+                                                <label className="flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="followUpStatus"
+                                                        value="Wrong Information"
+                                                        checked={
+                                                            followUpData.status ===
+                                                            "Wrong Information"
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleFollowUpChange(
+                                                                "status",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="mr-2"
+                                                    />
+                                                    <span className="text-sm text-slate-700">
+                                                        Wrong Information
+                                                    </span>
+                                                </label>
+                                                <label className="flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="followUpStatus"
+                                                        value="Not Picked Up"
+                                                        checked={
+                                                            followUpData.status ===
+                                                            "Not Picked Up"
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleFollowUpChange(
+                                                                "status",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="mr-2"
+                                                    />
+                                                    <span className="text-sm text-slate-700">
+                                                        Not Picked Up
+                                                    </span>
+                                                </label>
+                                                <label className="flex items-center">
+                                                    <input
+                                                        type="radio"
+                                                        name="followUpStatus"
+                                                        value="Other"
+                                                        checked={
+                                                            followUpData.status ===
+                                                            "Other"
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleFollowUpChange(
+                                                                "status",
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="mr-2"
+                                                    />
+                                                    <span className="text-sm text-slate-700">
+                                                        Other
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        {/* Remarks */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Remarks{" "}
+                                                <span className="text-red-500">
+                                                    (Maximum 50 Words)
+                                                </span>
+                                            </label>
+                                            <textarea
+                                                value={followUpData.remarks}
+                                                onChange={(e) =>
+                                                    handleFollowUpChange(
+                                                        "remarks",
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                                                rows="4"
+                                                maxLength="50"
+                                            />
+                                            <p className="text-xs text-slate-500 mt-1">
+                                                {50 - remarksCount} characters
+                                                remaining
+                                            </p>
+                                        </div>
+
+                                        {/* Next Follow Up Date */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Next Follow Up Date{" "}
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value={followUpData.nextDate}
+                                                onChange={(e) =>
+                                                    handleFollowUpChange(
+                                                        "nextDate",
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                        </div>
+
+                                        {/* Next Follow Up Time */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                                Next Follow Up Time{" "}
+                                                <span className="text-red-500">
+                                                    *
+                                                </span>
+                                            </label>
+                                            <input
+                                                type="time"
+                                                value={followUpData.nextTime}
+                                                onChange={(e) =>
+                                                    handleFollowUpChange(
+                                                        "nextTime",
+                                                        e.target.value
+                                                    )
+                                                }
+                                                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="px-6 py-4 border-t bg-slate-50 flex justify-end gap-2">
+                                        <button
+                                            onClick={() =>
+                                                setShowFollowUpPopup(false)
+                                            }
+                                            className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors font-medium text-sm"
+                                        >
+                                            Close
+                                        </button>
+                                        <button
+                                            onClick={handleFollowUpSubmit}
+                                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm"
+                                        >
+                                            Submit
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {showStaffPopup && selectedCollege && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4">
+                                    {/* Header */}
+                                    <div className="flex items-center justify-between px-6 py-4 border-b">
+                                        <h2 className="text-xl font-semibold text-slate-800">
+                                            Staff List
+                                        </h2>
+                                        <button
+                                            onClick={() =>
+                                                setShowStaffPopup(false)
+                                            }
+                                            className="text-slate-400 hover:text-slate-600 transition-colors"
+                                        >
+                                            <X size={24} />
+                                        </button>
+                                    </div>
+
+                                    {/* Table */}
+                                    <div className="overflow-auto max-h-96">
+                                        <table className="w-full">
+                                            <thead className="bg-slate-50 sticky top-0">
+                                                <tr>
+                                                    <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700">
+                                                        Name
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700">
+                                                        Email
+                                                    </th>
+                                                    <th className="px-6 py-3 text-left text-sm font-semibold text-slate-700">
+                                                        Mobile
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-slate-200">
+                                                {selectedCollege.staff?.map(
+                                                    (member, index) => (
+                                                        <tr
+                                                            key={index}
+                                                            className="hover:bg-slate-50"
+                                                        >
+                                                            <td className="px-6 py-3 text-sm text-slate-800">
+                                                                {member.name}
+                                                            </td>
+                                                            <td className="px-6 py-3 text-sm text-slate-600">
+                                                                {member.email}
+                                                            </td>
+                                                            <td className="px-6 py-3 text-sm text-slate-600">
+                                                                {member.mobile}
+                                                            </td>
+                                                        </tr>
+                                                    )
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div className="px-6 py-4 border-t bg-slate-50 flex justify-end">
+                                        <button
+                                            onClick={() =>
+                                                setShowStaffPopup(false)
+                                            }
+                                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Footer */}

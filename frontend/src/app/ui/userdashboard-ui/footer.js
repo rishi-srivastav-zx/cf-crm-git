@@ -5,7 +5,7 @@ export default function () {
         <>
             <footer className="footer-gradient text-white relative overflow-hidden dark:bg-gray-800">
                 <div className="city-banner py-4">
-                    <div className="max-w-7xl mx-auto px-4">
+                    <div className="w-full mx-auto px-4">
                         <div className="flex flex-wrap justify-center md:justify-between items-center gap-4 text-white font-semibold">
                             <div className="text-center md:text-left">
                                 <i className="fas fa-map-marker-alt mr-2"></i>
@@ -23,7 +23,7 @@ export default function () {
                     </div>
                 </div>
 
-                <div className="max-w-7xl mx-auto px-4 py-16">
+                <div className="w-full mx-auto px-4 py-16">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                         <div className="footer-card scroll-reveal">
                             <h3 className="text-xl font-bold mb-6 section-title">

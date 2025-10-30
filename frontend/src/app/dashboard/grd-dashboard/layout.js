@@ -1,19 +1,15 @@
 
-import Footer from "../ui/dashboard/footer";
 
-import '@/app/dashboard/dash.css'
-import Sidebar from "../ui/dashboard/sidebar";
+import "@/app/dashboard/dash.css";
+import Sidebar from "../../ui/grd-dashboard-ui/sidebar";
 
 export default function Layout({ children }) {
-     
-
     return (
         <>
             <div className="">
                 {/* <Header /> */}
-                < Sidebar />
+                <Sidebar />
                 {children}
-                <Footer />
             </div>
         </>
     );

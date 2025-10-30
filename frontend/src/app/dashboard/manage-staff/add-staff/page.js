@@ -32,12 +32,23 @@ export default function AddStaffForm() {
         console.log("Form Submitted:", formData);
     };
 
+      const handleBack = () => {
+          window.history.back();
+      };
+
     return (
         <div className="min-h-screen bg-gray-50 py-10 px-6 ml-64">
-            <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-md p-8 border border-gray-200">
+            <div className="w-full mx-auto bg-white rounded-2xl shadow-md p-8 border border-gray-200">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-6">
                     Add Staff Details
                 </h2>
+
+                <button
+                    onClick={handleBack}
+                    className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-colors ml-auto flex justify-end"
+                >
+                    Back
+                </button>
 
                 <form
                     onSubmit={handleSubmit}

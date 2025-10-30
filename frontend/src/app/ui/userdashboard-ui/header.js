@@ -52,7 +52,7 @@ export default function Header() {
     return (
         <div className="dark:bg-gray-800 bg-gray-50">
             <div className="bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 border-b-2 border-orange-500 shadow-lg">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
                         <div className="flex-shrink-0">

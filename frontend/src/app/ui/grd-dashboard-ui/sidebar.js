@@ -44,36 +44,15 @@ export default function Sidebar() {
                             </span>
                         </Link>
 
-                        <Link
-                            href="/dashboard/manage-college"
-                            prefetch={false}
-                            className="flex items-center px-6 py-3.5 text-white hover:bg-white/10 hover:pl-8 transition-all duration-300 group"
-                        >
-                            <i className="fas fa-graduation-cap w-5 mr-3 text-base"></i>
-                            <span className="font-medium text-[15px]">
-                                Manage colleges
-                            </span>
-                        </Link>
 
                         <Link
-                            href="/dashboard/manage-staff"
-                            prefetch={false}
-                            className="flex items-center px-6 py-3.5 text-white hover:bg-white/10 hover:pl-8 transition-all duration-300 group"
-                        >
-                            <i className="fas fa-sliders w-5 mr-3 text-base"></i>
-                            <span className="font-medium text-[15px]">
-                                Manage Staff
-                            </span>
-                        </Link>
-
-                        <Link
-                            href="/dashboard/manage-course"
+                            href="/dashboard/grd-dashboard/manage-course"
                             prefetch={false}
                             className="flex items-center px-6 py-3.5 text-white hover:bg-white/10 hover:pl-8 transition-all duration-300 group"
                         >
                             <i className="fas fa-university w-5 mr-3 text-base"></i>
                             <span className="font-medium text-[15px]">
-                                Manage Courses
+                                Manage Course
                             </span>
                         </Link>
 
@@ -85,17 +64,6 @@ export default function Sidebar() {
                             <i className="fa fa-users w-5 mr-3 text-base"></i>
                             <span className="font-medium text-[15px]">
                                 Manage Leads
-                            </span>
-                        </Link>
-
-                        <Link
-                            href="/dashboard/grd-dashboard"
-                            prefetch={false}
-                            className="flex items-center px-6 py-3.5 text-white hover:bg-white/10 hover:pl-8 transition-all duration-300 group"
-                        >
-                            <i className="fas fa-home w-5 mr-3 text-base"></i>
-                            <span className="font-medium text-[15px]">
-                                GRD-Dashboard
                             </span>
                         </Link>
 
