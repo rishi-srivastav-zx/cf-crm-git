@@ -1,8 +1,11 @@
 "use client";
-import React, { useState } from "react";
-import { MessageSquare, Send, Phone, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { MessageSquare, Send, Phone, X, Upload } from "lucide-react";
 
 const StudentLeadsManager = () => {
+    const API_BASE = "http://localhost:3001/api/admin";
+    
     const [selectedCountry, setSelectedCountry] = useState("");
     const [selectedState, setSelectedState] = useState("");
     const [selectedCity, setSelectedCity] = useState("");
@@ -13,16 +16,24 @@ const StudentLeadsManager = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const [isFeeModalOpen, setIsFeeModalOpen] = useState(false);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [leads, setLeads] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const [editingLead, setEditingLead] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalLeads, setTotalLeads] = useState(0);
     const [formData, setFormData] = useState({
-        name: "Akansha",
-        mobile: "7895733414",
+        name: "",
+        mobile: "",
         email: "",
         country: "India",
-        state: "Uttarakhand",
-        city: "Kotdwara",
+        state: "",
+        city: "",
         course: "",
         leadType: "Warm",
         sourceType: "",
+        college: "",
     });
     const [feeData, setFeeData] = useState({
         courseName: "B.Tech (CE)",
@@ -53,174 +64,219 @@ const StudentLeadsManager = () => {
         });
     };
 
-    const handleSubmit = () => {
-        console.log("Form submitted:", formData);
-        alert("Lead updated successfully!");
-        setIsOpen(false);
-    };
-
     const handleFeeSubmit = () => {
         console.log("Fee details submitted:", feeData);
         alert("Fee details sent successfully!");
         setIsFeeModalOpen(false);
     };
 
-    const handleBadgeClick = (badge) => {
+    // Fetch leads from backend
+    const fetchLeads = async () => {
+        try {
+            setLoading(true);
+            setError("");
+            const params = {
+                page: currentPage,
+                limit: showEntries,
+                search: searchQuery,
+            };
+
+            if (selectedCountry) params.country = selectedCountry;
+            if (selectedState) params.state = selectedState;
+            if (selectedCity) params.city = selectedCity;
+            if (selectedSourceType) params.sourceType = selectedSourceType;
+            if (selectedCourses) params.course = selectedCourses;
+            if (selectedStatus) params.leadType = selectedStatus;
+
+            const res = await axios.get(`${API_BASE}/leads`, { params });
+            
+            if (res.data.success) {
+                const transformedLeads = res.data.data.map((lead) => ({
+                    id: lead._id || lead.id,
+                    name: lead.name,
+                    tech: lead.course,
+                    badges: [
+                        lead.leadType?.toLowerCase() || "warm",
+                        "Edit",
+                        "Fee",
+                    ],
+                    phone: lead.mobile ? `+91 ${lead.mobile.slice(0, 5)}******` : "N/A",
+                    addedBy: lead.createdAt
+                        ? new Date(lead.createdAt).toLocaleDateString("en-IN", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                          })
+                        : "N/A",
+                    college: lead.college || "N/A",
+                    location: `${lead.country || ""}\n${lead.state || ""}\n${lead.city || ""}`,
+                    source: lead.sourceType || "N/A",
+                    followUp: `Follow Up (${lead.followUp || 0})`,
+                    lastFollowUp: lead.lastFollowUp
+                        ? `Last Follow Up: ${new Date(lead.lastFollowUp).toLocaleDateString("en-IN")}`
+                        : "Last Follow Up: ND",
+                    overdue: lead.overdue || "N/A",
+                    dateMissed: lead.dateMissed || null,
+                    whatsapp: lead.whatsapp || null,
+                    loginTime: lead.loginTime || null,
+                    _raw: lead, // Store raw data for editing
+                }));
+                setLeads(transformedLeads);
+                setTotalLeads(res.data.pagination?.total || transformedLeads.length);
+            } else {
+                setError(res.data.message || "Failed to fetch leads");
+            }
+        } catch (err) {
+            console.error("Error fetching leads:", err);
+            setError(err.response?.data?.message || "Error fetching leads");
+            setLeads([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchLeads();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentPage, showEntries, searchQuery, selectedCountry, selectedState, selectedCity, selectedSourceType, selectedCourses, selectedStatus]);
+
+    const handleBadgeClick = (badge, lead) => {
         if (badge === "Edit") {
+            if (lead && lead._raw) {
+                setFormData({
+                    name: lead._raw.name || "",
+                    mobile: lead._raw.mobile || "",
+                    email: lead._raw.email || "",
+                    country: lead._raw.country || "India",
+                    state: lead._raw.state || "",
+                    city: lead._raw.city || "",
+                    course: lead._raw.course || "",
+                    leadType: lead._raw.leadType || "Warm",
+                    sourceType: lead._raw.sourceType || "",
+                    college: lead._raw.college || "",
+                });
+                setEditingLead(lead._raw._id || lead.id);
+            }
             setIsOpen(true);
         } else if (badge === "Fee") {
             setIsFeeModalOpen(true);
         }
     };
 
-    const leads = [
-        {
-            id: 1,
-            name: "Akansha",
-            tech: "B.Tech (CSE)",
-            badges: ["warm", "Edit", "Fee"],
-            phone: "+91 78595******",
-            addedBy: "15-Oct-2024, 08:48 AM (378 days ago)",
-            college: "Uttaranchal University Dehradun",
-            location: "India\nUttarakhand\nKotdwara",
-            source: "Social Media",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: 30-Apr-2025",
-            overdue: "College Assign 1",
-            dateMissed: "Last followup date expired : 378 days ago",
-        },
-        {
-            id: 2,
-            name: "Ankit Rawat",
-            tech: "B.sc (IT)",
-            badges: ["warm", "Edit", "No-fee-updated"],
-            phone: "+91 97200******",
-            addedBy: "4-Oct-2024 8:50:39 PM",
-            college: "Alpine Group of Institutes",
-            location: "India\nRajasthan\nJaipur",
-            source: "College Forum",
-            whatsapp: "6395218125",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: 30-10-2024",
-            overdue: "College Assign 1",
-            loginTime: "Login Time: 08:13:46 PM",
-        },
-        {
-            id: 3,
-            name: "Chinmay",
-            tech: "JEE",
-            badges: ["warm", "Edit", "No-fee-updated"],
-            phone: "+91 82400******",
-            addedBy: "13-Oct-2024, 10:08 AM (376 days ago)",
-            college: "Uttaranchal University Dehradun",
-            location: "India\nUttarakhand\nDehradun",
-            source: "College Forum",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: 18-10-2024",
-            overdue: "College Assign 1",
-            dateMissed: "Last followup date expired : 372 days ago",
-        },
-        {
-            id: 4,
-            name: "Chirag Seth",
-            tech: "B.C.A",
-            badges: ["warm", "Edit", "Fee"],
-            phone: "+91 88265******",
-            addedBy: "14-Oct-2024, 10:28 AM (375 days ago)",
-            college: "GRD COLLEGE",
-            location: "India\nMadhya Pradesh\nGwalior",
-            source: "College Forum",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: 18-Oct",
-            overdue: "College Assign 5",
-        },
-        {
-            id: 5,
-            name: "College Forum",
-            tech: "B.Tech",
-            badges: ["cold", "Edit", "No-fee-updated"],
-            phone: "+91 06398******",
-            addedBy: "19-Oct-2024, 10:25 AM (368 days ago)",
-            college: "Alpine Group of Institution",
-            location: "India\nUttarakhand\nDehradun",
-            source: "Self",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: 17-10-2024",
-            overdue: "College Assign 3",
-            dateMissed: "Last followup date expired : 372 days ago",
-        },
-        {
-            id: 6,
-            name: "Gyatri",
-            tech: "B.Tech. (ME)",
-            badges: ["warm", "Edit", "Fee"],
-            phone: "+91 78695******",
-            addedBy: "18-Nov-2024, 12:05 PM (314 days ago)",
-            college: "GRD COLLEGE",
-            location: "India\nUttarakhand\nDehradun",
-            source: "College Forum",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: ND",
-            overdue: "College Assign 1",
-        },
-        {
-            id: 7,
-            name: "Hari Om G",
-            tech: "B.Tech. (ME)",
-            badges: ["Cold", "Edit", "Fee"],
-            phone: "+91 91902******",
-            addedBy: "18-Oct-2024, 07:18 AM (371 days ago)",
-            college: "GRD COLLEGE",
-            location: "India\nUttarakhand\nPauri",
-            source: "College Forum",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: 17-Oct",
-            overdue: "College Assign 5",
-        },
-        {
-            id: 8,
-            name: "Harisha",
-            tech: "B.Sc. Data Science",
-            badges: ["warm", "Edit", "No-fee-updated"],
-            phone: "+91 89722******",
-            addedBy: "19-Oct-2024, 06:24 AM (367 days ago)",
-            college: "UNIVERSITY OF PATANJALI",
-            location: "India\nHaryana\nFirozpur Jhirka",
-            source: "College Forum",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: ND",
-            overdue: "College Assign 1",
-        },
-        {
-            id: 9,
-            name: "Harshit Chauhan",
-            tech: "B.sc (CS-A)",
-            badges: ["cold", "Edit", "Fee"],
-            phone: "+91 82198******",
-            addedBy: "18-Oct-2024, 09:08 AM (374 days ago)",
-            college: "GRD COLLEGE",
-            location: "India\nRajasthan\nAjmer",
-            source: "College Forum",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: 20-10-2024",
-            overdue: "College Assign 6",
-            dateMissed: "Last followup date expired : 369 days ago",
-        },
-        {
-            id: 10,
-            name: "Harshit Chauhan Ggggg",
-            tech: "B.Pharma",
-            badges: ["cold", "Edit", "Fee"],
-            phone: "+91 82198******",
-            addedBy: "18-Oct-2024, 04:48 AM (370 days ago)",
-            college: "GRD COLLEGE",
-            location: "India\nArunachal Pradesh\nAlong",
-            source: "College Forum",
-            followUp: "Follow Up (0)",
-            lastFollowUp: "Last Follow Up: ND",
-            overdue: "College Assign 1",
-        },
-    ];
+    const handleSubmit = async () => {
+        try {
+            if (!formData.name || !formData.mobile || !formData.course || !formData.leadType || !formData.sourceType) {
+                alert("Please fill in all required fields");
+                return;
+            }
+
+            if (editingLead) {
+                // Update existing lead
+                const res = await axios.put(`${API_BASE}/leads/${editingLead}`, formData);
+                if (res.data.success) {
+                    alert("Lead updated successfully!");
+                    setIsOpen(false);
+                    setEditingLead(null);
+                    fetchLeads();
+                } else {
+                    alert(res.data.message || "Failed to update lead");
+                }
+            } else {
+                // Create new lead
+                const res = await axios.post(`${API_BASE}/leads`, formData);
+                if (res.data.success) {
+                    alert("Lead created successfully!");
+                    setIsOpen(false);
+                    setFormData({
+                        name: "",
+                        mobile: "",
+                        email: "",
+                        country: "India",
+                        state: "",
+                        city: "",
+                        course: "",
+                        leadType: "Warm",
+                        sourceType: "",
+                        college: "",
+                    });
+                    fetchLeads();
+                } else {
+                    alert(res.data.message || "Failed to create lead");
+                }
+            }
+        } catch (err) {
+            console.error("Error submitting lead:", err);
+            alert(err.response?.data?.message || "Error submitting lead");
+        }
+    };
+
+    const handleBulkUpload = async (file) => {
+        if (!file) {
+            alert("Please select a file");
+            return;
+        }
+
+        // Check if file is CSV or Excel
+        const fileType = file.name.split(".").pop().toLowerCase();
+        if (!["csv", "xlsx", "xls"].includes(fileType)) {
+            alert("Please upload a CSV or Excel file");
+            return;
+        }
+
+        try {
+            // For now, we'll use a simple CSV parser
+            // In production, you might want to use a library like papaparse
+            const text = await file.text();
+            const lines = text.split("\n");
+            const headers = lines[0].split(",").map((h) => h.trim());
+
+            const leadsToUpload = [];
+            for (let i = 1; i < lines.length; i++) {
+                if (lines[i].trim()) {
+                    const values = lines[i].split(",").map((v) => v.trim());
+                    const lead = {};
+                    headers.forEach((header, index) => {
+                        lead[header.toLowerCase()] = values[index] || "";
+                    });
+                    
+                    // Map CSV headers to our schema
+                    if (lead.name && lead.mobile) {
+                        leadsToUpload.push({
+                            name: lead.name,
+                            mobile: lead.mobile,
+                            email: lead.email || "",
+                            country: lead.country || "India",
+                            state: lead.state || "",
+                            city: lead.city || "",
+                            course: lead.course || "",
+                            leadType: lead.leadtype || lead.lead_type || "Warm",
+                            sourceType: lead.sourcetype || lead.source_type || "",
+                            college: lead.college || "",
+                        });
+                    }
+                }
+            }
+
+            if (leadsToUpload.length === 0) {
+                alert("No valid leads found in the file");
+                return;
+            }
+
+            const res = await axios.post(`${API_BASE}/leads/bulk`, { leads: leadsToUpload });
+            if (res.data.success) {
+                alert(`${res.data.data?.length || 0} leads uploaded successfully!`);
+                setIsUploadModalOpen(false);
+                fetchLeads();
+            } else {
+                alert(res.data.message || "Failed to upload leads");
+            }
+        } catch (err) {
+            console.error("Error uploading leads:", err);
+            alert(err.response?.data?.message || "Error uploading leads");
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 p-6 overflow-x-auto ml-64">
@@ -230,8 +286,48 @@ const StudentLeadsManager = () => {
                     <h1 className="text-2xl font-semibold text-gray-800 whitespace-nowrap">
                         Manage Student Leads
                     </h1>
-                    <button className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition whitespace-nowrap">
+                    <button 
+                        onClick={() => {
+                            setIsUploadModalOpen(true);
+                            setEditingLead(null);
+                            setFormData({
+                                name: "",
+                                mobile: "",
+                                email: "",
+                                country: "India",
+                                state: "",
+                                city: "",
+                                course: "",
+                                leadType: "Warm",
+                                sourceType: "",
+                                college: "",
+                            });
+                        }}
+                        className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700 transition whitespace-nowrap flex items-center gap-2"
+                    >
+                        <Upload size={18} />
                         Upload Leads
+                    </button>
+                    <button 
+                        onClick={() => {
+                            setIsOpen(true);
+                            setEditingLead(null);
+                            setFormData({
+                                name: "",
+                                mobile: "",
+                                email: "",
+                                country: "India",
+                                state: "",
+                                city: "",
+                                course: "",
+                                leadType: "Warm",
+                                sourceType: "",
+                                college: "",
+                            });
+                        }}
+                        className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition whitespace-nowrap"
+                    >
+                        Add New Lead
                     </button>
                 </div>
 
@@ -392,7 +488,20 @@ const StudentLeadsManager = () => {
 
                     {/* Table Rows */}
                     <div className="divide-y divide-gray-200">
-                        {leads.map((lead, index) => (
+                        {loading ? (
+                            <div className="p-8 text-center text-gray-500">
+                                Loading leads...
+                            </div>
+                        ) : error ? (
+                            <div className="p-8 text-center text-red-500">
+                                {error}
+                            </div>
+                        ) : leads.length === 0 ? (
+                            <div className="p-8 text-center text-gray-500">
+                                No leads found
+                            </div>
+                        ) : (
+                            leads.map((lead, index) => (
                             <div
                                 key={lead.id}
                                 className="flex gap-4 px-4 py-4 hover:bg-gray-50 items-start"
@@ -419,7 +528,8 @@ const StudentLeadsManager = () => {
                                                             key={idx}
                                                             onClick={() =>
                                                                 handleBadgeClick(
-                                                                    badge
+                                                                    badge,
+                                                                    lead
                                                                 )
                                                             }
                                                             className={`text-xs px-2 py-0.5 rounded text-white whitespace-nowrap cursor-pointer transition-colors ${
@@ -448,9 +558,8 @@ const StudentLeadsManager = () => {
                                                         {/* Header */}
                                                         <div className="flex items-center justify-between px-5 py-3 border-b sticky top-0 bg-white">
                                                             <h2 className="text-base font-semibold text-gray-800">
-                                                                Edit Lead Detail
-                                                                :{" "}
-                                                                {formData.name}
+                                                                {editingLead ? "Edit Lead Detail" : "Add New Lead"}
+                                                                {formData.name && `: ${formData.name}`}
                                                             </h2>
                                                             <button
                                                                 onClick={() =>
@@ -716,7 +825,7 @@ const StudentLeadsManager = () => {
                                                                     }
                                                                     className="px-5 py-2 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
                                                                 >
-                                                                    Update
+                                                                    {editingLead ? "Update" : "Create"}
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -954,36 +1063,91 @@ const StudentLeadsManager = () => {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                            ))
+                        )}
                     </div>
                 </div>
 
                 {/* Footer */}
                 <div className="flex justify-between items-center">
                     <p className="text-sm text-gray-600 whitespace-nowrap">
-                        Showing 1 to 10 of 22 leads
+                        Showing {(currentPage - 1) * parseInt(showEntries) + 1} to {Math.min(currentPage * parseInt(showEntries), totalLeads)} of {totalLeads} leads
                     </p>
                     <div className="flex gap-1">
-                        <button className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">
+                        <button 
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
                             Previous
                         </button>
-                        <button className="px-3 py-1 bg-indigo-600 text-white rounded text-sm">
-                            1
-                        </button>
-                        <button className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-100">
-                            2
-                        </button>
-                        <button className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-100">
-                            3
-                        </button>
-                        <button className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-100">
-                            4
-                        </button>
-                        <button className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap">
+                        {Array.from({ length: Math.ceil(totalLeads / parseInt(showEntries)) }, (_, i) => i + 1)
+                            .slice(Math.max(0, currentPage - 2), currentPage + 3)
+                            .map((pageNum) => (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => setCurrentPage(pageNum)}
+                                    className={`px-3 py-1 border border-gray-300 rounded text-sm ${
+                                        currentPage === pageNum
+                                            ? "bg-indigo-600 text-white"
+                                            : "text-gray-700 hover:bg-gray-100"
+                                    }`}
+                                >
+                                    {pageNum}
+                                </button>
+                            ))}
+                        <button 
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                            disabled={currentPage >= Math.ceil(totalLeads / parseInt(showEntries))}
+                            className="px-3 py-1 border border-gray-300 rounded text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
                             Next
                         </button>
                     </div>
                 </div>
+
+                {/* Upload Leads Modal */}
+                {isUploadModalOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg w-full max-w-md shadow-2xl">
+                            <div className="flex items-center justify-between px-5 py-3 border-b sticky top-0 bg-white">
+                                <h2 className="text-base font-semibold text-gray-800">
+                                    Upload Leads
+                                </h2>
+                                <button
+                                    onClick={() => setIsUploadModalOpen(false)}
+                                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+                            <div className="px-5 py-4">
+                                <p className="text-sm text-gray-700 mb-4">
+                                    Upload a CSV or Excel file with the following columns:
+                                    name, mobile, email, country, state, city, course, leadType, sourceType, college
+                                </p>
+                                <input
+                                    type="file"
+                                    accept=".csv,.xlsx,.xls"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            handleBulkUpload(e.target.files[0]);
+                                        }
+                                    }}
+                                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                />
+                                <div className="flex justify-end gap-2 mt-4">
+                                    <button
+                                        onClick={() => setIsUploadModalOpen(false)}
+                                        className="px-5 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                                    >
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

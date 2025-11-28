@@ -88,17 +88,6 @@ export default function Sidebar() {
                             </span>
                         </Link>
 
-                        <Link
-                            href="/dashboard/grd-dashboard"
-                            prefetch={false}
-                            className="flex items-center px-6 py-3.5 text-white hover:bg-white/10 hover:pl-8 transition-all duration-300 group"
-                        >
-                            <i className="fas fa-home w-5 mr-3 text-base"></i>
-                            <span className="font-medium text-[15px]">
-                                GRD-Dashboard
-                            </span>
-                        </Link>
-
                         <div className="group">
                             <div className="flex items-center justify-between px-6 py-3.5 text-white hover:bg-white/10 hover:pl-8 transition-all duration-300 cursor-pointer">
                                 <div className="flex items-center">

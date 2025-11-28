@@ -1,11 +1,13 @@
 "use client";
 import React, { useState } from "react";
+import Link from "next/link";
 
 export default function DepartmentListing() {
     const [currentView, setCurrentView] = useState("listing");
     const [selectedDept, setSelectedDept] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [entriesPerPage, setEntriesPerPage] = useState(10);
+    
 
     const departments = [
         { name: "Department Of Agriculture And Allied Science", count: 5 },
@@ -173,14 +175,17 @@ export default function DepartmentListing() {
                                                     </td>
                                                     <td className="px-6 py-4 text-right">
                                                         {course.hasDetails ? (
-                                                            <button className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700 transition-colors">
-                                                                Edit Course
+                                                            <Link href="/grd-dashboard/manage-course/fee-details" className="bg-indigo-600 text-white px-4 py-2 rounded text-sm hover:bg-indigo-700 transition-colors">
+                                                                Edit Fee
                                                                 Details
-                                                            </button>
+                                                            </Link>
                                                         ) : (
-                                                            <button className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600 transition-colors">
-                                                                Add Course
-                                                            </button>
+                                                            <Link
+                                                                href="/grd-dashboard/manage-course/fee-sturcture"
+                                                                className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600 transition-colors"
+                                                            >
+                                                                Add Fee
+                                                            </Link>
                                                         )}
                                                     </td>
                                                 </tr>

@@ -44,9 +44,8 @@ export default function Sidebar() {
                             </span>
                         </Link>
 
-
                         <Link
-                            href="/dashboard/grd-dashboard/manage-course"
+                            href="/grd-dashboard/manage-course"
                             prefetch={false}
                             className="flex items-center px-6 py-3.5 text-white hover:bg-white/10 hover:pl-8 transition-all duration-300 group"
                         >
@@ -57,13 +56,24 @@ export default function Sidebar() {
                         </Link>
 
                         <Link
-                            href="/dashboard/manage-leads"
+                            href="/grd-dashboard/manage-templets"
                             prefetch={false}
                             className="flex items-center px-6 py-3.5 text-white hover:bg-white/10 hover:pl-8 transition-all duration-300 group"
                         >
                             <i className="fa fa-users w-5 mr-3 text-base"></i>
                             <span className="font-medium text-[15px]">
-                                Manage Leads
+                                Manage Templets
+                            </span>
+                        </Link>
+
+                        <Link
+                            href="/grd-dashboard/manage-leave"
+                            prefetch={false}
+                            className="flex items-center px-6 py-3.5 text-white hover:bg-white/10 hover:pl-8 transition-all duration-300 group"
+                        >
+                            <i className="fa fa-users w-5 mr-3 text-base"></i>
+                            <span className="font-medium text-[15px]">
+                                Manage Leave
                             </span>
                         </Link>
 

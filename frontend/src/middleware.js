@@ -29,11 +29,8 @@ console.log('Middleware Hello')
 });
  
 export const config = {
-    // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-    matcher: ["/((?!api|_next/static|_next/image|.*\\.png$).*)"],
-    // matcher: ["/dashboard/:path*"],
+    matcher: [
+        // Run middleware on everything EXCEPT these routes
+        "/((?!api/auth|api|_next/static|_next/image|.*\\.png$).*)",
+    ],
 };
-
-
-
-

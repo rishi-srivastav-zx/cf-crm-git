@@ -117,37 +117,13 @@ export default function AddCollegeForm() {
             // Show success popup
             setShowSuccessPopup(true);
 
-            // Reset form
-            setFormData({
-                collegeName: "",
-                establishYear: "",
-                websiteLink: "",
-                affiliatedUniversity: "",
-                collegeEmail: "",
-                phoneNumber: "",
-                landlineNumber: "",
-                naacGrade: "",
-                principalName: "",
-                pinCode: "",
-                country: "",
-                state: "",
-                city: "",
-                package: "",
-                address: "",
-                collegeDescription: "",
-                collegeLocationUrl: "",
-                collegeForumLink: "",
-                allowIndexing: "yes",
-                metaTitle: "",
-                metaKeywords: "",
-                metaDescription: "",
-            });
-            setCollegeLogo(null);
-            setCollegeLogoPreview(null);
-            setCoverPhoto(null);
-            setCoverPhotoPreview(null);
-            setErrors({});
-            setTouched({});
+             const timeoutId = setTimeout(() => {
+                 window.location.href = "/dashboard/manage-college";
+             }, 2500);
+
+             
+             window.navigationTimeout = timeoutId;
+
         } catch (error) {
             console.error("❌ Error:", error);
             alert(
@@ -199,7 +175,7 @@ export default function AddCollegeForm() {
         <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8 ml-64">
             {/* Success Popup Modal */}
             {showSuccessPopup && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 backdrop-blur-xl bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 animate-[scale-in_0.3s_ease-out]">
                         <div className="flex flex-col items-center text-center">
                             <div className="bg-green-100 rounded-full p-4 mb-4">
@@ -216,10 +192,14 @@ export default function AddCollegeForm() {
                                 successfully.
                             </p>
                             <button
-                                onClick={() => setShowSuccessPopup(false)}
+                                onClick={() => {
+                                    clearTimeout(window.navigationTimeout); // Clear auto-navigation
+                                    window.location.href =
+                                        "/dashboard/manage-college";
+                                }}
                                 className="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 hover:scale-105 shadow-lg"
                             >
-                                Close
+                                Go to College List
                             </button>
                         </div>
                     </div>
@@ -241,7 +221,7 @@ export default function AddCollegeForm() {
                                 the system
                             </p>
                         </div>
-            
+
                         <button
                             onClick={handleBack}
                             className="px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-colors ml-auto"

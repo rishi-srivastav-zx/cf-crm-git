@@ -1,4 +1,4 @@
-import Main from "../../ui/dashboard/Main";
+import Main from "../ui/grd-dashboard-ui/main";
 
 export default function Page() {
     return <Main />;

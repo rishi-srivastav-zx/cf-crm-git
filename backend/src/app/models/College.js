@@ -5,11 +5,11 @@ const collegeSchema = new mongoose.Schema({
     basicInformation: {
         collegeLogo: {
             type: String,
-            required: true,
+            required: false,
         },
         collegeCoverPhoto: {
             type: String,
-            required: true,
+            required: false,
         },
         collegeName: {
             type: String,

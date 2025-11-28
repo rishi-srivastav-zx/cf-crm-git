@@ -23,6 +23,7 @@ export default async function main() {
     );
 
     app.use(bodyParser.json());
+    app.use('/uploads', express.static('uploads'));
 
     // Listen to Auth Routes
     app.all('/api', (req, res) => {

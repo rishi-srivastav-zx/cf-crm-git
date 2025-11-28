@@ -1,6 +1,6 @@
 import express from "express";
 import bcrypt from "bcrypt";
-import User from "../app/models/User.js";
+import User from '../app/models/User.js';
 // import authenticateJWT from '../app/middleware/Auth.js'
 
 const router = express.Router();
@@ -58,3 +58,5 @@ router.post("/create-user", async (req, res) => {
 });
 
 export default router;
+
+

@@ -135,7 +135,7 @@ export default function Dashboard() {
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
                             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                                Analytics Dashboard
+                                GRD-Dashboard
                             </h1>
                             <p className="text-sm text-gray-600">
                                 Welcome back

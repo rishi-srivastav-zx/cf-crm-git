@@ -40,6 +40,22 @@ const courseSchema = new mongoose.Schema(
             },
         },
 
+        courseCategory: {
+            type: String,
+            required: [true, "Course category is required"],
+            enum: {
+                values: [
+                    "Science",
+                    "Arts",
+                    "Commerce",
+                    "Engineering",
+                    "Medical",
+                    "Management",
+                ],
+                message: "{VALUE} is not a valid course category",
+            },
+        },
+
         isActive: {
             type: Boolean,
             default: true,
@@ -63,4 +79,4 @@ const courseSchema = new mongoose.Schema(
 
 const Course = mongoose.model("Course", courseSchema);
 
-module.exports = Course;
+export default Course;
